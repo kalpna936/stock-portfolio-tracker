@@ -1,0 +1,72 @@
+import csv
+
+# Hardcoded stock prices
+stock_prices = {
+    "AAPL": 180,
+    "TSLA": 250,
+    "GOOG": 2700,
+    "MSFT": 320,
+    "AMZN": 3300
+}
+
+portfolio = {}
+total_investment = 0
+
+print("📊 Welcome to Stock Portfolio Tracker")
+print("Available stocks:", ", ".join(stock_prices.keys()))
+
+# User input
+while True:
+    stock = input("\nEnter stock symbol (or 'done' to finish): ").upper()
+    
+    if stock == "DONE":
+        break
+    
+    if stock not in stock_prices:
+        print("❌ Stock not available!")
+        continue
+    
+    try:
+        quantity = int(input(f"Enter quantity for {stock}: "))
+        portfolio[stock] = portfolio.get(stock, 0) + quantity
+    except ValueError:
+        print("⚠️ Please enter a valid number!")
+
+# Calculate total investment
+print("\n📈 Your Portfolio:")
+for stock, qty in portfolio.items():
+    price = stock_prices[stock]
+    investment = price * qty
+    total_investment += investment
+    print(f"{stock} → {qty} shares × ${price} = ${investment}")
+
+print(f"\n💰 Total Investment Value: ${total_investment}")
+
+# Save option
+save = input("\nDo you want to save result? (yes/no): ").lower()
+
+if save == "yes":
+    file_type = input("Save as (txt/csv): ").lower()
+    
+    if file_type == "txt":
+        with open("portfolio.txt", "w") as f:
+            f.write("Stock Portfolio\n")
+            for stock, qty in portfolio.items():
+                price = stock_prices[stock]
+                f.write(f"{stock} - {qty} shares - ${price}\n")
+            f.write(f"\nTotal Investment: ${total_investment}")
+        print("✅ Saved as portfolio.txt")
+
+    elif file_type == "csv":
+        with open("portfolio.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Stock", "Quantity", "Price", "Total"])
+            for stock, qty in portfolio.items():
+                price = stock_prices[stock]
+                writer.writerow([stock, qty, price, qty * price])
+            writer.writerow([])
+            writer.writerow(["Total Investment", "", "", total_investment])
+        print("✅ Saved as portfolio.csv")
+
+    else:
+        print("❌ Invalid file type!")
